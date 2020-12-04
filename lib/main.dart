@@ -35,7 +35,7 @@ class MyHomePage extends StatefulWidget {
 class _MyHomePageState extends State<MyHomePage> {
   File _storedImage;
   final picker = ImagePicker();
-  String predict ;
+  String predict;
 
   Future imageFromCamera() async {
     final imageFile = await ImagePicker.pickImage(source: ImageSource.camera);
@@ -98,14 +98,20 @@ class _MyHomePageState extends State<MyHomePage> {
         });
   }
 
+  var _isLoading = false;
+
   Future _submitData() async {
+    setState(() {
+      _isLoading = true;
+    });
     String url = " ";
     final response =
         await http.post(url, headers: {"content/type": "application/json"});
     final extractedData = jsonDecode(response.body);
-  setState(() {
-    predict = extractedData['prediction'];
-  });
+    setState(() {
+      _isLoading = false;
+      predict = extractedData['prediction'];
+    });
   }
 
   @override
@@ -114,7 +120,8 @@ class _MyHomePageState extends State<MyHomePage> {
       appBar: AppBar(
         title: Text('Agriculture'),
       ),
-      body: Container(
+      body:  _isLoading == true ? Container(child: Center(child: CircularProgressIndicator(),),)
+      : Container(
         child: Center(
           child: Column(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -162,23 +169,39 @@ class _MyHomePageState extends State<MyHomePage> {
                       ))
                 ],
               ),
-              SizedBox(height:2,),
-              
-              predict!= null ? Container(child: Column(
-                children: [Container(child: Text("Disease Predicted:", style: TextStyle(fontSize: 20,color: Colors.red),)),
-                  SizedBox(height: 10,),
-                  Center(child: Text(predict,style:TextStyle(fontSize: 14,fontWeight: FontWeight.bold))),
-                ],
-              )): Container(),
+              SizedBox(
+                height: 2,
+              ),
+              predict != null
+                  ? Container(
+                      child: Column(
+                      children: [
+                        Container(
+                            child: Text(
+                          "Disease Predicted:",
+                          style: TextStyle(fontSize: 20, color: Colors.red),
+                        )),
+                        SizedBox(
+                          height: 10,
+                        ),
+                        Center(
+                            child: Text(predict,
+                                style: TextStyle(
+                                    fontSize: 14,
+                                    fontWeight: FontWeight.bold))),
+                      ],
+                    ))
+                  : Container(),
               RaisedButton(
-                onPressed: () {},
+                onPressed: () async {
+                  await _submitData();
+                },
                 child: Text(
                   'check for disease',
                   style: TextStyle(color: Colors.white),
                 ),
                 color: Theme.of(context).accentColor,
               ),
-              
             ],
           ),
         ),
