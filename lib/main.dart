@@ -105,8 +105,9 @@ class _MyHomePageState extends State<MyHomePage> {
       _isLoading = true;
     });
     String url = " ";
-    final response =
-        await http.post(url, headers: {"content/type": "application/json"});
+    final response = await http.post(url,
+        headers: {"content/type": "application/json"},
+        body: json.encode({'file': _storedImage}));
     final extractedData = jsonDecode(response.body);
     setState(() {
       _isLoading = false;
@@ -120,92 +121,102 @@ class _MyHomePageState extends State<MyHomePage> {
       appBar: AppBar(
         title: Text('Agriculture'),
       ),
-      body:  _isLoading == true ? Container(child: Center(child: CircularProgressIndicator(),),)
-      : Container(
-        child: Center(
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            crossAxisAlignment: CrossAxisAlignment.stretch,
-            children: [
-              Column(
-                children: <Widget>[
-                  SizedBox(
-                    height: 120,
-                  ),
-                  Container(
-                    height: 300,
-                    width: 300,
-                    decoration: BoxDecoration(
-                        border: Border.all(width: 1, color: Colors.grey)),
-                    child: _storedImage != null
-                        ? SingleChildScrollView(
-                            child: Image.file(
-                              _storedImage,
-                              fit: BoxFit.cover,
-                              width: double.infinity,
-                            ),
-                          )
-                        : Center(
-                            child: Text(
-                              'No image taken',
-                              textAlign: TextAlign.center,
-                            ),
-                          ),
-                  ),
-                  SizedBox(
-                    height: 10,
-                  ),
-                  FlatButton.icon(
-                      onPressed: () {
-                        _showPicker(context);
-                      },
-                      icon: Icon(
-                        Icons.camera,
-                        color: Theme.of(context).primaryColor,
-                      ),
-                      label: Text(
-                        'Take picture',
-                        style: TextStyle(color: Theme.of(context).primaryColor),
-                      ))
-                ],
+      body: _isLoading == true
+          ? Container(
+              child: Center(
+                child: CircularProgressIndicator(),
               ),
-              SizedBox(
-                height: 2,
-              ),
-              predict != null
-                  ? Container(
-                      child: Column(
-                      children: [
+            )
+          : Container(
+              child: Center(
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  crossAxisAlignment: CrossAxisAlignment.stretch,
+                  children: [
+                    Column(
+                      children: <Widget>[
+                        SizedBox(
+                          height: 120,
+                        ),
                         Container(
-                            child: Text(
-                          "Disease Predicted:",
-                          style: TextStyle(fontSize: 20, color: Colors.red),
-                        )),
+                          height: 300,
+                          width: 300,
+                          decoration: BoxDecoration(
+                              border: Border.all(width: 1, color: Colors.grey)),
+                          child: _storedImage != null
+                              ? SingleChildScrollView(
+                                  child: Image.file(
+                                    _storedImage,
+                                    fit: BoxFit.cover,
+                                    width: double.infinity,
+                                  ),
+                                )
+                              : Center(
+                                  child: Text(
+                                    'No image taken',
+                                    textAlign: TextAlign.center,
+                                  ),
+                                ),
+                        ),
                         SizedBox(
                           height: 10,
                         ),
-                        Center(
-                            child: Text(predict,
-                                style: TextStyle(
-                                    fontSize: 14,
-                                    fontWeight: FontWeight.bold))),
+                        FlatButton.icon(
+                            onPressed: () {
+                              _showPicker(context);
+                            },
+                            icon: Icon(
+                              Icons.camera,
+                              color: Theme.of(context).primaryColor,
+                            ),
+                            label: Text(
+                              'Take picture',
+                              style: TextStyle(
+                                  color: Theme.of(context).primaryColor),
+                            ))
                       ],
-                    ))
-                  : Container(),
-              RaisedButton(
-                onPressed: () async {
-                  await _submitData();
-                },
-                child: Text(
-                  'check for disease',
-                  style: TextStyle(color: Colors.white),
+                    ),
+                    SizedBox(
+                      height: 2,
+                    ),
+                    predict != null
+                        ? Container(
+                            child: Column(
+                            children: [
+                              Container(
+                                  child: Text(
+                                "Disease Predicted:",
+                                style:
+                                    TextStyle(fontSize: 20, color: Colors.red),
+                              )),
+                              SizedBox(
+                                height: 10,
+                              ),
+                              Center(
+                                  child: Text(predict,
+                                      style: TextStyle(
+                                          fontSize: 14,
+                                          fontWeight: FontWeight.bold))),
+                            ],
+                          ))
+                        : Container(),
+                    RaisedButton(
+                      onPressed: () async {
+                        if (_storedImage != null) {
+                          await _submitData();
+                        }
+                        
+                      },
+                      child: Text(
+                        'check for disease',
+                        style: TextStyle(color: Colors.white),
+                      ),
+                      color: Theme.of(context).accentColor,
+                    ),
+                  ],
                 ),
-                color: Theme.of(context).accentColor,
               ),
-            ],
-          ),
-        ),
-      ),
+            ),
     );
   }
 }
