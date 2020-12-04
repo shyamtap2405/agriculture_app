@@ -11,6 +11,8 @@ void main() {
   runApp(MyApp());
 }
 
+
+
 class MyApp extends StatelessWidget {
   // This widget is the root of your application.
   @override
@@ -105,9 +107,13 @@ class _MyHomePageState extends State<MyHomePage> {
       _isLoading = true;
     });
     String url = " ";
+    File imageFile = new File(_storedImage.path);
+    List<int> imageBytes = imageFile.readAsBytesSync();
+    String base64Imaage = base64.encode(imageBytes);
+
     final response = await http.post(url,
         headers: {"content/type": "application/json"},
-        body: json.encode({'file': _storedImage}));
+        body: json.encode({'file': base64Imaage}));
     final extractedData = jsonDecode(response.body);
     setState(() {
       _isLoading = false;
@@ -205,7 +211,6 @@ class _MyHomePageState extends State<MyHomePage> {
                         if (_storedImage != null) {
                           await _submitData();
                         }
-                        
                       },
                       child: Text(
                         'check for disease',
