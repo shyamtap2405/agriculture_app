@@ -106,7 +106,7 @@ class _MyHomePageState extends State<MyHomePage> {
     setState(() {
       _isLoading = true;
     });
-    String url = " ";
+    String url = " https://my-flask-agricuture-plant-disease.herokuapp.com/predict";
     File imageFile = new File(_storedImage.path);
     List<int> imageBytes = imageFile.readAsBytesSync();
     String base64Imaage = base64.encode(imageBytes);
